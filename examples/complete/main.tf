@@ -20,7 +20,7 @@ data "alicloud_vswitches" "default" {
 }
 
 resource "alicloud_vswitch" "default" {
-  count        = length(data.alicloud_vswitches.default.ids) > 1 ? 0 : 1
+  count        = length(data.alicloud_vswitches.default.ids) > 0 ? 0 : 1
   vpc_id       = data.alicloud_vpcs.default.ids.0
   cidr_block   = cidrsubnet(data.alicloud_vpcs.default.vpcs[0].cidr_block, 8, 15)
   zone_id      = data.alicloud_db_zones.default.zones.1.id
@@ -92,13 +92,7 @@ resource "alicloud_rds_account" "target_account" {
   db_instance_id   = alicloud_db_instance.target.id
   account_name     = "test_mysql"
   account_password = "N1cetest"
-}
-
-resource "alicloud_db_account_privilege" "target_privilege" {
-  instance_id  = alicloud_db_instance.target.id
-  account_name = alicloud_rds_account.target_account.name
-  privilege    = "ReadWrite"
-  db_names     = alicloud_db_database.target_db.*.name
+  account_type     = "Super"
 }
 
 module "example" {
